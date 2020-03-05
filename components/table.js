@@ -23,7 +23,8 @@ const DataTable = ({users}) => {
           "&:hover" : {backgroundColor: 'black'}
         },
         // pageSize: users.length,
-        exportFileName: 'users.cvs'
+        exportButton: true,
+        exportFileName: 'users'
       }}
       editable={{
         onRowAdd: newData => 
@@ -61,7 +62,16 @@ const DataTable = ({users}) => {
               });
             }, 600);
           }),
-      }} />
+          onRowClick: (e) => {
+            console.log(e)
+          }
+      }}
+      onRowClick={(event, row) => {
+        console.log(event)
+        console.log(row)
+      }}
+
+       />
     
   ) : <div>Loading</div>
 }
