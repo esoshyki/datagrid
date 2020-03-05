@@ -1,26 +1,29 @@
 import React from 'react';
-import dataCreator from '../data/fakerData';
-import PropTypes from 'prop-types'
 
 const DataTable = ({users}) => {
-  console.log(`users = ${users}`)
-  if (users) {
-  return(
+  return users ? (
     <div>
+      <table>
+      <tr>
+        <th>Имя</th>
+        <th>Почта</th>
+        <th>Ник</th>
+        <th>Возвраст</th>
+      </tr>
       {users.map((element, index) => {
           const { name, email, nickName, age } = element
           return (
-            <div key={index}>
-              <p>{name}</p>
-              <p>{email}</p>
-              <p>{nickName}</p>
-              <p>{age}</p>
-            </div>
+            <tr key={index}>
+              <td>{name}</td>
+              <td>{email}</td>
+              <td>{nickName}</td>
+              <td>{age}</td>
+            </tr>
           )
       })}
+      </table>
     </div>
-  )
-} else return ''
+  ) : <div>Loading</div>
 }
 
 export default DataTable;
