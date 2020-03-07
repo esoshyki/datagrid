@@ -5,10 +5,13 @@ const DataTable = ({users}) => {
 
   const [state, setState ] = React.useState({
     columns: [
-      { title:  'Name', field: 'name'},
-      { title:  'Email', field: 'email'},
-      { title:  'nickName', field: 'nickName'},
-      { title:  'age', field: 'age'},
+      { title: 'Name', field: 'name'},
+      { title: 'Email', field: 'email'},
+      { title: 'nickName', field: 'nickName'},
+      { title: 'age', field: 'age'},
+      { title: 'status', field: 'status'},
+      { title: 'is married', field: 'married'},
+      { title: 'exam date', field: 'exam'}
     ],
     data: users,
     selectedRow: null
