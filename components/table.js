@@ -9,16 +9,16 @@ const DataTable = ({users}) => {
   const [selectedRow, setSelectedRow ] = useState([])
   const [state, setState ] = React.useState({
     columns: [
-      { title: 'Name', field: 'name', customFilterAndSearch: filtering},
-      { title: 'Email', field: 'email'},
-      { title: 'nickName', field: 'nickName'},
-      { title: 'age', field: 'age'},
+      { title: 'Name', field: 'name', customFilterAndSearch: filtering, hidden: false},
+      { title: 'Email', field: 'email',  hidden: false},
+      { title: 'nickName', field: 'nickName',  hidden: false, type: 'string'},
+      { title: 'age', field: 'age', hidden: false, type: 'numeric'},
       { title: 'status', field: 'status',
         lookup: 
         { production: 'production',
-        support: 'support', design: 'design' }},
-      { title: 'is married', field: 'married'},
-      { title: 'exam date', field: 'exam'}
+        support: 'support', design: 'design' }, hidden: false},
+      { title: 'is married', field: 'married', hidden: false, type: 'boolean'},
+      { title: 'exam date', field: 'exam', hidden: false, type: 'date'}
     ],
     data: users,
     selectedRow: null
@@ -41,6 +41,12 @@ const DataTable = ({users}) => {
         exportFileName: 'users',
         filtering: true,
         selection: true,
+        columnsButton: true
+      }}
+      localization={{
+        header: {
+          actions: 'Actions'
+      },
       }}
       onSelectionChange= {(rows) => setSelectedRow(rows.map(el => el.tableData.id))}
       actions={[
