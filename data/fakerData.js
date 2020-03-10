@@ -21,7 +21,6 @@ const dataCreator = () => {
     }
     fakeData.push(person);
   }
-  console.log(fakeData)
   return fakeData
 }
 
