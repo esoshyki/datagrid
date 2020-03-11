@@ -1,5 +1,22 @@
+.menu
+  position: fixed
+  top: 0
+  +flex(row-reverse, flex-start)
+  margin: 5px
+
+  .MuiButtonBase-root
+    width: 30px !important
+    height: 35px
+    border-radius: 17px
+
+.table-info
+  +flex(row)
+  position: fixed
+  top: 0
+  left: 400px
+  
 .main-table
-  margin: 0 auto
+  margin: 50px auto
   width: 2100px
   +poppins
 
@@ -46,5 +63,11 @@
   flex-direction: column
 
 .column-header-container
-  +flex(row)
+  +flex(row, flex-start)
   width: 300px
+  div 
+    margin-right: 20px
+    &:hover
+      cursor: pointer
+      color: green
+      transition-duration: 0.5s

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import Button from '@material-ui/core/Button';
 import { FixedSizeList as List } from 'react-window';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import { Cell, DateCell, BoolCell } from './cells';
 
 const DataTable = ({users}) => {
 
   const [ usersData, setUsersData ] = useState([...users])
+  const [ virtualization, setVirtualization ] = useState(true)
 
   const [ columns, setColumns ] = useState([
     {id: 1, title:'Name', dataKey:'name', isVisible: true},
@@ -41,26 +42,25 @@ const DataTable = ({users}) => {
     })
   }
 
-  const Cell = ( {innerInfo, rowId, colId}) => {
+  const disableVizualization = () => {
+    setVirtualization(!virtualization)
+  }
+
+  const Menu = () => {
     return (
-      <div className='cell' key={'cell' + rowId + colId}>
-        {innerInfo}
+      <div className='menu'>
+        <Button 
+          variant="contained" 
+          color={virtualization ? "primary" : "secondary"} 
+          onClick={disableVizualization}>V</Button>
       </div>
     )
   }
 
-  const BoolCell = ( {innerInfo, rowId, colId}) => {
+  const TableInfo = () => {
     return (
-      <div className='cell' key={'cell' + rowId + colId}>
-        {innerInfo ? <CheckIcon /> : <ClearIcon />}
-      </div>
-    )
-  }
-
-  const DateCell = ( {innerInfo, rowId, colId}) => {
-    return (
-      <div className='cell' key={'cell' + rowId + colId}>
-        {new Date(innerInfo).toDateString()}
+      <div className='table-info'>
+          Virtualization is {virtualization ? "on" : "off"}
       </div>
     )
   }
@@ -128,34 +128,39 @@ const DataTable = ({users}) => {
       )}
 
   return (
-    <div className='main-table'>
-      <div className='table-header'>
-        {columns.filter(el => el.isVisible).map((column, idx) => {
-            return (
-            <div className='column-header-container'>
-              <div className={'cell column'+idx} onClick={() => sortHandler(column.dataKey)}>
-                {column.title}
+    <div>
+      <Menu />
+      <TableInfo />
+      <div className='main-table'>
+        <div className='table-header'>
+          {columns.filter(el => el.isVisible).map((column, idx) => {
+              return (
+              <div className='column-header-container'>
+                <div className={'header-cell column'+idx} 
+                  onClick={() => sortHandler(column.dataKey)} 
+                  onMouseOver={() => console.log('here')}>
+                  {column.title}
+                </div>
+                {sortSettings.column === column.dataKey ? sortSettings.icon : null}
               </div>
-              {sortSettings.column === column.dataKey ? sortSettings.icon : null}
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
 
-      <div className='table-body'>
-        <List
-          usersData={usersData}
-          height={1000}
-          width={2100}
-          itemSize={40}
-          itemCount={usersData.length}
-          className="list-container"
-          style={{
-            top: '20px'
-          }}
-          >
-          {Row}
-        </List>
+        <div className='table-body'>
+          <List
+            height={virtualization ? 1000 : users.length * 40}
+            width={2100}
+            itemSize={40}
+            itemCount={usersData.length}
+            className="list-container"
+            style={{
+              top: '20px'
+            }}
+            >
+            {Row}
+          </List>
+        </div>
       </div>
     </div>
   )

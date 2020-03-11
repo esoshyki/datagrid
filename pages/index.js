@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux"
-import DataTable from '../components/tablevirtual'
+import DataTable from '../components/table/tablevirtual'
 import personsData from '../data/data.json';
 import Head from 'next/head';
 import '../style/style.sass'
