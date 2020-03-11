@@ -4,11 +4,17 @@ import { FixedSizeList as List } from 'react-window';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import { Cell, DateCell, BoolCell } from './cells';
+import Tooltip from '@material-ui/core/Tooltip';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Filter from './filter';
+import Sorter from './sort';
 
 const DataTable = ({users}) => {
 
   const [ usersData, setUsersData ] = useState([...users])
   const [ virtualization, setVirtualization ] = useState(true)
+  const [ findValue, setFindValue ] = useState('');
 
   const [ columns, setColumns ] = useState([
     {id: 1, title:'Name', dataKey:'name', isVisible: true},
@@ -28,6 +34,8 @@ const DataTable = ({users}) => {
     icon: null
   })
 
+  const [renderedData, setRenderedData] = useState(users)
+
   const sortHandler = (sortKey) => {
     let sortStatus;
     if (sortSettings.column !== sortKey) {
@@ -35,11 +43,15 @@ const DataTable = ({users}) => {
     } else {
       sortStatus = (sortSettings.fase + 1) % 3
     }
-    setSortSettings({
+    const newSortSettings = {
       column: sortKey,
       fase: sortStatus,
       icon: icons[sortStatus]
-    })
+    }
+    const sortedData = newSortSettings.fase === 0 ? [...users] : Sorter({array: renderedData, sortSettings: newSortSettings})
+    setSortSettings(newSortSettings)
+    setRenderedData(sortedData)
+
   }
 
   const disableVizualization = () => {
@@ -49,26 +61,47 @@ const DataTable = ({users}) => {
   const Menu = () => {
     return (
       <div className='menu'>
-        <Button 
-          variant="contained" 
-          color={virtualization ? "primary" : "secondary"} 
-          onClick={disableVizualization}>V</Button>
+        <Tooltip title='Disable virtualization'>
+          <Button 
+            variant="contained" 
+            color={virtualization ? "primary" : "secondary"} 
+            onClick={disableVizualization}>V</Button>
+        </Tooltip>
       </div>
     )
+  }
+
+  const handleInput = ({target}) => {
+    const {value} = target;
+    const filltredArray = Filter({sortedData: renderedData, findValue: value})
+    setFindValue(value)
+    setRenderedData(filltredArray)
   }
 
   const TableInfo = () => {
     return (
       <div className='table-info'>
+        <Typography align="left" variant="subtitle1" >
           Virtualization is {virtualization ? "on" : "off"}
+        </Typography>
+          <TextField id="standard-basic" label="filter" onChange={handleInput} defaultValue={findValue}/>
+      </div>
+    )
+  }
+
+  const EmptyData = () => {
+    return (
+      <div className='no-data'>
+        <Typography variant="h6">
+        No data
+        </Typography>
       </div>
     )
   }
 
   const Row = ( { index, style }) => {
     const cols = columns.filter(el => el.isVisible)
-
-    const filltredData = sortSettings.column ? [...users].sort(
+    const sortedData = sortSettings.column ? [...users].sort(
       (a,b) => {
         switch(sortSettings.column) {
           case 'age':
@@ -112,7 +145,7 @@ const DataTable = ({users}) => {
     return (
       <div key={'row' + index} style={style} className='row'>
         {cols.map((colData) => {
-          const rowData = filltredData[index];
+          const rowData = renderedData[index];
           const innerInfo=rowData[colData.dataKey]
           const idx = colData.id
           switch(idx) {
@@ -136,11 +169,12 @@ const DataTable = ({users}) => {
           {columns.filter(el => el.isVisible).map((column, idx) => {
               return (
               <div className='column-header-container'>
-                <div className={'header-cell column'+idx} 
-                  onClick={() => sortHandler(column.dataKey)} 
-                  onMouseOver={() => console.log('here')}>
-                  {column.title}
-                </div>
+                <Tooltip title='Sort'>
+                  <div className={'header-cell column'+idx} 
+                    onClick={() => sortHandler(column.dataKey)}>
+                    {column.title}
+                  </div>
+                </Tooltip>
                 {sortSettings.column === column.dataKey ? sortSettings.icon : null}
               </div>
             )

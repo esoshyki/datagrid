@@ -23,12 +23,8 @@ const DataTable = ({users}) => {
     selectedRow: null
   })
 
-  useEffect(() => {
-    console.log(selectedRow)
-  })
-
   const handleScroll = (event) => {
-    console.log(event)
+
   }
 
   return users ? (
