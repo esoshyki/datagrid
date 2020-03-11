@@ -4,8 +4,8 @@
   +poppins
 
   .table-header 
-    position: fixed
     +flex($jc: flex-start)
+    font-weight: 700
     height: 30px
     top: 0
     background: #c3e8ec
@@ -44,3 +44,7 @@
 .list-container .cdk-virtual-scroll-content-wrapper 
   display: flex
   flex-direction: column
+
+.column-header-container
+  +flex(row)
+  width: 300px
