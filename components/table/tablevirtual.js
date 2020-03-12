@@ -10,14 +10,13 @@ import Typography from '@material-ui/core/Typography';
 import Filter, { boolFilter, enumFilter } from './filter';
 import Sorter from './sort';
 import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ColumnVisibility from './columnsVisibility';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -120,6 +119,7 @@ const DataTable = ({users}) => {
   const Menu = () => {
     return (
       <div className='menu'>
+        <ColumnVisibility columns={columns} setColumns={setColumns}/>
         <Tooltip title='Disable virtualization'>
           <Button 
             variant="contained" 
