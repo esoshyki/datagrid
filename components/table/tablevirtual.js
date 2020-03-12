@@ -252,6 +252,9 @@ const DataTable = ({users}) => {
     )
   }
 
+  const handleScroll = (event) => {
+    console.log(event)
+  }
 
   return (
     <div>
@@ -279,6 +282,7 @@ const DataTable = ({users}) => {
         { filtredData.length ? (
         <div className='table-body'>
           <List
+            scrollLeft={handleScroll}
             height={virtualization ? 1000 : usersData.length * 40}
             width={2100}
             itemSize={40}
