@@ -15,6 +15,8 @@ const DataTable = ({users}) => {
   const [ usersData, setUsersData ] = useState([...users])
   const [ virtualization, setVirtualization ] = useState(true)
   const [ findValue, setFindValue ] = useState('');
+  const [ sortedData, setSortedData] = useState([...users]);
+  const [ filtredData, setFiltredData ] = useState([...users])
 
   const [ columns, setColumns ] = useState([
     {id: 1, title:'Name', dataKey:'name', isVisible: true},
@@ -34,9 +36,15 @@ const DataTable = ({users}) => {
     icon: null
   })
 
-  const [renderedData, setRenderedData] = useState(users)
+  const handleInput = async ({target}) => {
+    const {value} = target;
+    console.log(value)
+    const filltredArray = await Filter({sortedData:  sortedData, findValue: value})
+    setFindValue(value)
+    setFiltredData(filltredArray)
+  }
 
-  const sortHandler = (sortKey) => {
+  const sortHandler = async (sortKey) => {
     let sortStatus;
     if (sortSettings.column !== sortKey) {
       sortStatus = 1
@@ -48,9 +56,9 @@ const DataTable = ({users}) => {
       fase: sortStatus,
       icon: icons[sortStatus]
     }
-    const sortedData = newSortSettings.fase === 0 ? [...users] : Sorter({array: renderedData, sortSettings: newSortSettings})
+    const sortedData = await newSortSettings.fase === 0 ? [...users] : Sorter({array:  filtredData, sortSettings: newSortSettings});
     setSortSettings(newSortSettings)
-    setRenderedData(sortedData)
+    setFiltredData(sortedData)
 
   }
 
@@ -71,12 +79,6 @@ const DataTable = ({users}) => {
     )
   }
 
-  const handleInput = ({target}) => {
-    const {value} = target;
-    const filltredArray = Filter({sortedData: renderedData, findValue: value})
-    setFindValue(value)
-    setRenderedData(filltredArray)
-  }
 
   const TableInfo = () => {
     return (
@@ -101,51 +103,10 @@ const DataTable = ({users}) => {
 
   const Row = ( { index, style }) => {
     const cols = columns.filter(el => el.isVisible)
-    const sortedData = sortSettings.column ? [...users].sort(
-      (a,b) => {
-        switch(sortSettings.column) {
-          case 'age':
-            switch (sortSettings.fase) {
-              case 0:
-                return 0
-              case 1:
-                return a.age - b.age
-              case 2:
-                return b.age - a.age
-            }
-          case 'date':
-            switch (sortSettings.fase) {
-              case 0:
-                return 0
-              case 1:
-                return parseInt(a) < parseInt(b)
-              case 2:
-                return parseInt(a) > parseInt(b)
-            }
-          case 'married':
-            switch (sortSettings.fase) {
-              case 0:
-                return 0
-              case 1:
-                return Number(a[sortSettings.column]) - Number(b[sortSettings.column])
-              case 2:
-                return Number(b[sortSettings.column]) - Number(a[sortSettings.column])
-            }
-          default:
-            switch (sortSettings.fase) {
-              case 0:
-                return 0
-              case 1:
-                return a[sortSettings.column].localeCompare(b[sortSettings.column])
-              case 2:
-                return b[sortSettings.column].localeCompare(a[sortSettings.column])
-            }
-        }
-      }) : [...users];
     return (
       <div key={'row' + index} style={style} className='row'>
         {cols.map((colData) => {
-          const rowData = renderedData[index];
+          const rowData =  filtredData[index];
           const innerInfo=rowData[colData.dataKey]
           const idx = colData.id
           switch(idx) {
@@ -180,13 +141,13 @@ const DataTable = ({users}) => {
             )
           })}
         </div>
-
+        { sortedData.length ? (
         <div className='table-body'>
           <List
-            height={virtualization ? 1000 : users.length * 40}
+            height={virtualization ? 1000 : usersData.length * 40}
             width={2100}
             itemSize={40}
-            itemCount={usersData.length}
+            itemCount={ sortedData.length}
             className="list-container"
             style={{
               top: '20px'
@@ -194,7 +155,7 @@ const DataTable = ({users}) => {
             >
             {Row}
           </List>
-        </div>
+        </div>) : <EmptyData />}
       </div>
     </div>
   )
