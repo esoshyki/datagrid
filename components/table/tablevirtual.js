@@ -17,6 +17,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -41,6 +42,7 @@ const DataTable = ({users}) => {
   const [ filtredData, setFiltredData ] = useState([...users]);
   const [ boolFilterData, setBoolFilterData ] = useState(null);
   const [ enumFilterData, setEnumFilterData ] = useState([]);
+  const [ selectedRows, setSelectedRow ] = useState([])
 
   const [ columns, setColumns ] = useState([
     {id: 1, title:'Name', dataKey:'name', isVisible: true},
@@ -88,6 +90,32 @@ const DataTable = ({users}) => {
   const disableVizualization = () => {
     setVirtualization(!virtualization)
   }
+  const deleteRowHandler = () => {
+    const array = [...filtredData].sort((a, b) => a - b);
+    let count = 0
+    selectedRows.forEach(el => {
+      array.splice(el - count, 1)
+      count ++ 
+    })
+    setFiltredData(array)
+    setSelectedRow([])
+  }
+
+  const RowAction = () => {
+    if (selectedRows.length === 0) {
+      return null 
+    } else {
+      return (
+        <div className="actions">
+          <Tooltip title="Delete selected rows">
+            <Button variant="contained" onClick={deleteRowHandler}>
+              <DeleteIcon />
+            </Button>
+          </Tooltip>
+        </div>
+      )
+    }
+  }
 
   const Menu = () => {
     return (
@@ -98,6 +126,7 @@ const DataTable = ({users}) => {
             color={virtualization ? "primary" : "secondary"} 
             onClick={disableVizualization}>V</Button>
         </Tooltip>
+        <RowAction />
       </div>
     )
   }
@@ -123,10 +152,28 @@ const DataTable = ({users}) => {
     )
   }
 
+  const handleRowClick = ({target}) => {
+    const currentRow = target.classList[0] === 'row' ? target : target.parentNode
+    const currentRowIndex = currentRow.id.replace("row", "");
+    const arrayOfSelectedRows = [...selectedRows];
+    const index = arrayOfSelectedRows.indexOf(currentRowIndex);
+    if (index < 0) {
+      arrayOfSelectedRows.push(currentRowIndex)
+    } else {
+      arrayOfSelectedRows.splice(index, 1)
+      console.log(arrayOfSelectedRows)
+    }
+    setSelectedRow(arrayOfSelectedRows)
+  }
+
   const Row = ( { index, style }) => {
     const cols = columns.filter(el => el.isVisible)
     return (
-      <div key={'row' + index} style={style} className='row'>
+      <div key={'row' + index}
+        style={style} 
+        className= {selectedRows.includes(index.toString()) ? 'row selected' : 'row'}
+        onClick={handleRowClick} 
+        id={`row${index}`}>
         {cols.map((colData) => {
           const rowData =  filtredData[index];
           const innerInfo=rowData[colData.dataKey]
@@ -204,6 +251,7 @@ const DataTable = ({users}) => {
     </FormControl>
     )
   }
+
 
   return (
     <div>
