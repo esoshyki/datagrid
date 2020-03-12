@@ -10,9 +10,10 @@
 */ 
 
 const Filter = ({sortedData, findValue}) => {
-  const newArray = [...sortedData].filter((element, idx) => {
+  const newArray = sortedData.filter((element, idx) => {
+    element.exam = new Date(element.exam).toDateString()
     return Object.values(element)
-          .some(value => value.toString().toLowerCase().includes(findValue.toLowerCase()))
+          .some(value => value.toString().toLowerCase().includes(findValue.toString().toLowerCase()))
   })
   return newArray
 }

@@ -38,7 +38,6 @@ const DataTable = ({users}) => {
 
   const handleInput = async ({target}) => {
     const {value} = target;
-    console.log(value)
     const filltredArray = await Filter({sortedData:  sortedData, findValue: value})
     setFindValue(value)
     setFiltredData(filltredArray)
@@ -86,7 +85,6 @@ const DataTable = ({users}) => {
         <Typography align="left" variant="subtitle1" >
           Virtualization is {virtualization ? "on" : "off"}
         </Typography>
-          <TextField id="standard-basic" label="filter" onChange={handleInput} defaultValue={findValue}/>
       </div>
     )
   }
@@ -126,6 +124,7 @@ const DataTable = ({users}) => {
       <Menu />
       <TableInfo />
       <div className='main-table'>
+      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} defaultValue={findValue}/>
         <div className='table-header'>
           {columns.filter(el => el.isVisible).map((column, idx) => {
               return (
@@ -141,13 +140,13 @@ const DataTable = ({users}) => {
             )
           })}
         </div>
-        { sortedData.length ? (
+        { filtredData.length ? (
         <div className='table-body'>
           <List
             height={virtualization ? 1000 : usersData.length * 40}
             width={2100}
             itemSize={40}
-            itemCount={ sortedData.length}
+            itemCount={ filtredData.length}
             className="list-container"
             style={{
               top: '20px'
