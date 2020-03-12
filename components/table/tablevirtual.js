@@ -7,16 +7,40 @@ import { Cell, DateCell, BoolCell } from './cells';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Filter from './filter';
+import Filter, { boolFilter, enumFilter } from './filter';
 import Sorter from './sort';
+import { makeStyles } from '@material-ui/core/styles';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import ListItemText from '@material-ui/core/ListItemText';
+import Checkbox from '@material-ui/core/Checkbox';
+
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
+const enumValues = ['design', 'support', 'production']
 
 const DataTable = ({users}) => {
 
-  const [ usersData, setUsersData ] = useState([...users])
-  const [ virtualization, setVirtualization ] = useState(true)
+  const classes = useStyles();
+
+  const [ usersData, setUsersData ] = useState([...users]);
+  const [ virtualization, setVirtualization ] = useState(true);
   const [ findValue, setFindValue ] = useState('');
   const [ sortedData, setSortedData] = useState([...users]);
-  const [ filtredData, setFiltredData ] = useState([...users])
+  const [ filtredData, setFiltredData ] = useState([...users]);
+  const [ boolFilterData, setBoolFilterData ] = useState(null);
+  const [ enumFilterData, setEnumFilterData ] = useState([]);
 
   const [ columns, setColumns ] = useState([
     {id: 1, title:'Name', dataKey:'name', isVisible: true},
@@ -119,6 +143,68 @@ const DataTable = ({users}) => {
       </div>
       )}
 
+  const handleBoolFilterChange = ({target}) => {
+    const newFiltredData = boolFilter({sortedData: sortedData, boolFilterData: target.value})
+    setFiltredData(newFiltredData);
+    setBoolFilterData(target.value);
+  }    
+  
+  const handleEnumFilterChange = ({target}) => {
+    const filterValue = target.value;
+    if (filterValue === 'All') {
+      setEnumFilterData([])
+    } else {
+      const array = [...enumFilterData]
+      const index = array.indexOf(filterValue);
+      if (index < 0) {
+        array.push(filterValue);
+      } else {
+        array.splice(index, 1);
+      }
+      const newFiltredData = enumFilter({sortedData: sortedData, enumFilterData: array})
+      setEnumFilterData(array);
+      setFiltredData(newFiltredData);
+    }
+  }    
+
+  const BoolFilter = () => {
+    return (
+      <FormControl className={classes.formControl}>
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={boolFilterData}
+        onChange={handleBoolFilterChange}
+      >
+        <MenuItem value={true}>Married</MenuItem>
+        <MenuItem value={false}>Not Married</MenuItem>
+        <MenuItem value={'not'}>All</MenuItem>
+      </Select>
+    </FormControl>
+    )
+  }
+
+  const EnumFilter = () => {
+    const values = ['design', 'support', 'production', 'All']
+    return (
+      <FormControl className={classes.formControl}>
+      <Select
+        labelId="enum-simple-select-label"
+        id="enum-filter-select"
+        value={''}
+        onChange={handleEnumFilterChange}
+      >
+        {values.map(value => (
+          <MenuItem key={value} value={value}>
+            <Checkbox checked={enumFilterData.includes(value)}/>
+            <ListItemText primary={value} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+    )
+  }
+
   return (
     <div>
       <Menu />
@@ -134,7 +220,9 @@ const DataTable = ({users}) => {
                     onClick={() => sortHandler(column.dataKey)}>
                     {column.title}
                   </div>
-                </Tooltip>
+                  </Tooltip>
+                  {column.id === 6 ? <BoolFilter /> : null}
+                  {column.id === 5 ? <EnumFilter /> : null}
                 {sortSettings.column === column.dataKey ? sortSettings.icon : null}
               </div>
             )

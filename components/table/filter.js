@@ -1,13 +1,15 @@
-/*
-[
-  {
-  "name":"Fiona Kuhlman",
-  "email":"Petra30@yahoo.com",
-  "nickName":"Gianni.Jakubowski",
-  "age":45,"status":"design",
-  "married":true,"exam":
-  "2020-08-10T05:45:33.500Z"}
-*/ 
+export const boolFilter = ({sortedData, boolFilterData}) => {
+  return boolFilterData !== 'not' ? 
+  sortedData.filter(element => element.married === boolFilterData)
+  : sortedData
+}
+
+export const enumFilter = ({sortedData, enumFilterData}) => {
+  console.log(enumFilterData)
+  return enumFilterData.length > 0 ? 
+  sortedData.filter(element => enumFilterData.includes(element.status))
+   : sortedData
+}
 
 const Filter = ({sortedData, findValue}) => {
   const newArray = sortedData.filter((element, idx) => {
