@@ -31,8 +31,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const DataTable = ({users, sorters, dispatch}) => {
+  
 
-
+  const renderedData = sortContent({
+    contentArray: users, 
+    activeSorters: sorters.activeSorters, 
+    sortSettings: sorters.sortSettings})
 
   useEffect(() => {
     console.log(sorters)
@@ -76,7 +80,7 @@ const DataTable = ({users, sorters, dispatch}) => {
   }
 
   const sortHandler = async ({sortKey, shiftKey}) => {
-    sortService({sortKey, shiftKey, dispatch})
+    sortService({sortKey, shiftKey, activeSorters: sorters.activeSorters, dispatch})
     let sortStatus;
     if (sortSettings.column !== sortKey) {
       sortStatus = 1
@@ -183,7 +187,7 @@ const DataTable = ({users, sorters, dispatch}) => {
         onClick={handleRowClick} 
         id={`row${index}`}>
         {cols.map((colData) => {
-          const rowData =  filtredData[index];
+          const rowData =  renderedData[index];
           const innerInfo=rowData[colData.dataKey]
           const idx = colData.id
           switch(idx) {
@@ -283,7 +287,7 @@ const DataTable = ({users, sorters, dispatch}) => {
                   </Tooltip>
                   {column.id === 6 ? <BoolFilter /> : null}
                   {column.id === 5 ? <EnumFilter /> : null}
-                {sortSettings.column === column.dataKey ? sortSettings.icon : null}
+                {icons[sorters.sortSettings[column.dataKey].fase]}
               </div>
             )
           })}

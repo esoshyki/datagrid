@@ -12,7 +12,7 @@ const sortSettings = {
   age : {
     fase: 0,
   },
-  age : {
+  status : {
     fase: 0,
   },
   married: {
