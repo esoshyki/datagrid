@@ -10,7 +10,6 @@ const severalSorts = [
 
 export default ({sortKey, shiftKey, activeSorters, dispatch}) => {
   if (shiftKey) {
-    console.log(activeSorters)
     if (activeSorters.length === 0) {
       dispatch(replaceSorter(sortKey))
     } else if (activeSorters.every(el => severalSorts.includes(el)) && severalSorts.includes(sortKey)) {

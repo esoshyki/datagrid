@@ -19,6 +19,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ColumnVisibility from './columnsVisibility';
 import { connect } from "react-redux"
 import sortService, { sortContent } from './services/sortService';
+import filterService, { filterContent } from './services/filterService';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -30,28 +31,28 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DataTable = ({users, sorters, dispatch}) => {
-  
+const DataTable = ({users, sorters, filters, dispatch}) => {
 
-  const renderedData = sortContent({
+  const classes = useStyles();
+  
+  const sortedData = sortContent({
     contentArray: users, 
     activeSorters: sorters.activeSorters, 
     sortSettings: sorters.sortSettings})
 
-  useEffect(() => {
-    console.log(sorters)
-    console.log(dispatch)
+  const renderedData = filterContent({
+    contentArray: sortedData,
+    filters: filters
   })
 
-  const classes = useStyles();
+  console.log(renderedData[0], renderedData[1], renderedData[2])
+
 
   const [ usersData, setUsersData ] = useState([...users]);
   const [ virtualization, setVirtualization ] = useState(true);
   const [ findValue, setFindValue ] = useState('');
-  const [ sortedData, setSortedData] = useState([...users]);
   const [ filtredData, setFiltredData ] = useState([...users]);
   const [ boolFilterData, setBoolFilterData ] = useState(null);
-  const [ enumFilterData, setEnumFilterData ] = useState([]);
   const [ selectedRows, setSelectedRow ] = useState([])
 
   const [ columns, setColumns ] = useState([
@@ -66,41 +67,23 @@ const DataTable = ({users, sorters, dispatch}) => {
 
   const icons = [null, <ArrowDownwardIcon />, <ArrowUpwardIcon />];
 
-  const [sortSettings, setSortSettings] = useState({
-    column: null,
-    fase: 0,
-    icon: null
-  })
-
-  const handleInput = async ({target}) => {
+  const handleInput = ({target}) => {
     const {value} = target;
-    const filltredArray = await Filter({sortedData:  sortedData, findValue: value})
-    setFindValue(value)
-    setFiltredData(filltredArray)
+    const inputFilter = {
+      type: 'global',
+      value: value
+    }
+    filterService({inputFilter, dispatch})
   }
 
   const sortHandler = async ({sortKey, shiftKey}) => {
     sortService({sortKey, shiftKey, activeSorters: sorters.activeSorters, dispatch})
-    let sortStatus;
-    if (sortSettings.column !== sortKey) {
-      sortStatus = 1
-    } else {
-      sortStatus = (sortSettings.fase + 1) % 3
-    }
-    const newSortSettings = {
-      column: sortKey,
-      fase: sortStatus,
-      icon: icons[sortStatus]
-    }
-    const sortedData = await newSortSettings.fase === 0 ? [...users] : Sorter({array:  filtredData, sortSettings: newSortSettings});
-    setSortSettings(newSortSettings)
-    setFiltredData(sortedData)
-
   }
 
   const disableVizualization = () => {
     setVirtualization(!virtualization)
   }
+
   const deleteRowHandler = () => {
     const array = [...filtredData].sort((a, b) => a - b);
     let count = 0
@@ -173,7 +156,6 @@ const DataTable = ({users, sorters, dispatch}) => {
       arrayOfSelectedRows.push(currentRowIndex)
     } else {
       arrayOfSelectedRows.splice(index, 1)
-      console.log(arrayOfSelectedRows)
     }
     setSelectedRow(arrayOfSelectedRows)
   }
@@ -188,7 +170,7 @@ const DataTable = ({users, sorters, dispatch}) => {
         id={`row${index}`}>
         {cols.map((colData) => {
           const rowData =  renderedData[index];
-          const innerInfo=rowData[colData.dataKey]
+          const innerInfo= rowData[colData.dataKey]
           const idx = colData.id
           switch(idx) {
             case 6:
@@ -203,48 +185,50 @@ const DataTable = ({users, sorters, dispatch}) => {
       )}
 
   const handleBoolFilterChange = ({target}) => {
-    const newFiltredData = boolFilter({sortedData: sortedData, boolFilterData: target.value})
-    setFiltredData(newFiltredData);
-    setBoolFilterData(target.value);
+    const inputFilter = {
+      type: 'bool',
+      value: target.value
+    }
+    filterService({inputFilter, dispatch})
   }    
   
   const handleEnumFilterChange = ({target}) => {
-    const filterValue = target.value;
-    if (filterValue === 'All') {
-      setEnumFilterData([])
+    const filtersArray = [...filters.enum];
+    if (filters.enum.includes(target.value)) {
+      filtersArray.splice(filtersArray.indexOf(target.value), 1);
     } else {
-      const array = [...enumFilterData]
-      const index = array.indexOf(filterValue);
-      if (index < 0) {
-        array.push(filterValue);
-      } else {
-        array.splice(index, 1);
-      }
-      const newFiltredData = enumFilter({sortedData: sortedData, enumFilterData: array})
-      setEnumFilterData(array);
-      setFiltredData(newFiltredData);
+      filtersArray.push(target.value);
     }
+    const inputFilter = {
+      type: 'enum',
+      value: filtersArray
+    }
+    filterService({inputFilter, dispatch})
   }    
 
   const BoolFilter = () => {
+    const values = {
+      1: 'yes',
+      2: 'no',
+    }
     return (
       <FormControl className={classes.formControl}>
       <Select
         labelId="demo-simple-select-label"
         id="demo-simple-select"
-        value={boolFilterData}
+        value={filters.bool ? values[filters.bool] : ''}
         onChange={handleBoolFilterChange}
       >
-        <MenuItem value={true}>Married</MenuItem>
-        <MenuItem value={''}>Not Married</MenuItem>
-        <MenuItem value={'not'}>All</MenuItem>
+        <MenuItem value={1}>Married</MenuItem>
+        <MenuItem value={2}>Not Married</MenuItem>
+        <MenuItem value={''}>All</MenuItem>
       </Select>
     </FormControl>
     )
   }
 
   const EnumFilter = () => {
-    const values = ['design', 'support', 'production', 'All']
+    const values = ['design', 'support', 'production']
     return (
       <FormControl className={classes.formControl}>
       <Select
@@ -255,17 +239,13 @@ const DataTable = ({users, sorters, dispatch}) => {
       >
         {values.map(value => (
           <MenuItem key={value} value={value}>
-            <Checkbox checked={enumFilterData.includes(value)}/>
+            <Checkbox checked={filters.enum.includes(value)}/>
             <ListItemText primary={value} />
           </MenuItem>
         ))}
       </Select>
     </FormControl>
     )
-  }
-
-  const handleScroll = (event) => {
-    console.log(event)
   }
 
   return (
@@ -292,14 +272,13 @@ const DataTable = ({users, sorters, dispatch}) => {
             )
           })}
         </div>
-        { filtredData.length ? (
+        { renderedData.length ? (
         <div className='table-body'>
           <List
-            scrollLeft={handleScroll}
-            height={virtualization ? 1000 : usersData.length * 40}
+            height={virtualization ? 1000 : renderedData.length * 40}
             width={2100}
             itemSize={40}
-            itemCount={ filtredData.length}
+            itemCount={ renderedData.length}
             className="list-container"
             style={{
               top: '20px'
@@ -316,6 +295,7 @@ const DataTable = ({users, sorters, dispatch}) => {
 function mapStateToProps(state) {
   return {
       sorters: state.sorters,
+      filters: state.filters
   };
 }
 
