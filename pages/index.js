@@ -5,8 +5,9 @@ import personsData from '../data/data.json';
 import Head from 'next/head';
 import '../style/style.sass'
 
-const Index = ({count, users, dispatch}) => {
-
+const Index = ({sorters, dispatch}) => {
+  const users = personsData;
+  console.log(sorters)
   return users ? (
     <div>
       <Head>
@@ -23,9 +24,10 @@ const Index = ({count, users, dispatch}) => {
   ) : <div>Loading...</div>
 }
 
-Index.getInitialProps = async ({store}) => {
-  const { count } = store;
-  return {count: count, users: personsData}
+function mapStateToProps(state) {
+  return {
+      sorters: state.sorters,
+  };
 }
 
-export default connect(state => state)(Index);
+export default connect(mapStateToProps)(Index);
