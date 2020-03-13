@@ -1,7 +1,3 @@
-const numSort = (a, b, key, fase) => fase === 1 ? a[key] - b[key] : b[key] - a[key];
-const stringSort = (a, b, key, fase) => fase === 1 ? a[key].localeCompare(b[key]) : b[key].localeCompare(a[key]);
-const boolSort = (a, b, key, fase) => fase === 1 ? Number(a[key]) - Number(b[key]) : Number(b[key]) - Number(a[key]);
-const dateSort = (a, b, key, fase) => fase === 1 ? parseInt(a) < parseInt(b) : parseInt(b) < parseInt(a);
 
 const sortSettings = {
   name : {
@@ -35,28 +31,41 @@ const initialState = {
 
 export default (state = initialState, action) => {
   const key = action.payload;
+  let currentFase;
   let newSortSettings;
   let newActiveSorters;
+
   switch(action.type) {
     case('ADD_SORTER'):
+      currentFase = state.sortSettings[key].fase;
       newSortSettings = {
         ...state.sortSettings,
-        [key]: (state.sortSettings[key] + 1) % 3
+        [key]: {fase: (currentFase + 1) % 3}
       }
       newActiveSorters = [...state.activeSorters];
-      if (!newActiveSorters.includes(action.payload)) {
-        newActiveSorters.push(action.payload);
+      if (!newActiveSorters.includes(key)) {
+        newActiveSorters.push(key);
+      } else {
+        if (currentFase === 2) {
+          const index = newActiveSorters.indexOf(key)
+          newActiveSorters.splice(index, 1);
+        }
       }
       return {
         sortSettings: newSortSettings,
         activeSorters: newActiveSorters
       }
     case('REPLACE_SORTER'):
+      currentFase = state.sortSettings[key].fase;
       newSortSettings = {
         ...initialState.sortSettings,
-        [key]: (state.sortSettings[key] + 1) % 3
+        [key]: {fase: (state.sortSettings[key].fase + 1) % 3}
       }
-      newActiveSorters = [key]
+      if (currentFase === 2) {
+        newActiveSorters = []
+      } else {
+        newActiveSorters = [key]
+      }
       return {
         sortSettings: newSortSettings,
         activeSorters: newActiveSorters

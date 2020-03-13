@@ -7,7 +7,6 @@ import '../style/style.sass'
 
 const Index = ({sorters, dispatch}) => {
   const users = personsData;
-  console.log(sorters)
   return users ? (
     <div>
       <Head>

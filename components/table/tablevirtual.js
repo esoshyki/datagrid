@@ -17,6 +17,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ColumnVisibility from './columnsVisibility';
+import { connect } from "react-redux"
+import sortService, { sortContent } from './services/sortService';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -28,9 +30,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const enumValues = ['design', 'support', 'production']
+const DataTable = ({users, sorters, dispatch}) => {
 
-const DataTable = ({users}) => {
+
+
+  useEffect(() => {
+    console.log(sorters)
+    console.log(dispatch)
+  })
 
   const classes = useStyles();
 
@@ -68,7 +75,8 @@ const DataTable = ({users}) => {
     setFiltredData(filltredArray)
   }
 
-  const sortHandler = async (sortKey) => {
+  const sortHandler = async ({sortKey, shiftKey}) => {
+    sortService({sortKey, shiftKey, dispatch})
     let sortStatus;
     if (sortSettings.column !== sortKey) {
       sortStatus = 1
@@ -224,7 +232,7 @@ const DataTable = ({users}) => {
         onChange={handleBoolFilterChange}
       >
         <MenuItem value={true}>Married</MenuItem>
-        <MenuItem value={false}>Not Married</MenuItem>
+        <MenuItem value={''}>Not Married</MenuItem>
         <MenuItem value={'not'}>All</MenuItem>
       </Select>
     </FormControl>
@@ -268,7 +276,8 @@ const DataTable = ({users}) => {
               <div className='column-header-container'>
                 <Tooltip title='Sort'>
                   <div className={'header-cell column'+idx} 
-                    onClick={() => sortHandler(column.dataKey)}>
+                    onClick={(event) => {
+                      event.preventDefault(); sortHandler({sortKey: column.dataKey, shiftKey: event.shiftKey})}}>
                     {column.title}
                   </div>
                   </Tooltip>
@@ -299,4 +308,11 @@ const DataTable = ({users}) => {
     </div>
   )
 }
-export default DataTable;
+
+function mapStateToProps(state) {
+  return {
+      sorters: state.sorters,
+  };
+}
+
+export default connect(mapStateToProps)(DataTable);
