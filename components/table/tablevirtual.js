@@ -7,8 +7,6 @@ import { Cell, DateCell, BoolCell } from './cells';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Filter, { boolFilter, enumFilter } from './filter';
-import Sorter from './sort';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -45,14 +43,8 @@ const DataTable = ({users, sorters, filters, dispatch}) => {
     filters: filters
   })
 
-  console.log(renderedData[0], renderedData[1], renderedData[2])
-
-
-  const [ usersData, setUsersData ] = useState([...users]);
   const [ virtualization, setVirtualization ] = useState(true);
-  const [ findValue, setFindValue ] = useState('');
   const [ filtredData, setFiltredData ] = useState([...users]);
-  const [ boolFilterData, setBoolFilterData ] = useState(null);
   const [ selectedRows, setSelectedRow ] = useState([])
 
   const [ columns, setColumns ] = useState([
@@ -253,7 +245,7 @@ const DataTable = ({users, sorters, filters, dispatch}) => {
       <Menu />
       <TableInfo />
       <div className='main-table'>
-      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} defaultValue={findValue}/>
+      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} defaultValue={filters.global}/>
         <div className='table-header'>
           {columns.filter(el => el.isVisible).map((column, idx) => {
               return (
