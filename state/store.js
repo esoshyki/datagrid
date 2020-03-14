@@ -3,10 +3,12 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import SortersReducer from './reducers/Sorters'
 import FilterReducer from './reducers/Filters'
 import thunkMiddleware from 'redux-thunk'
+import ColumnReducer from './reducers/Columns';
 
 const reducers = combineReducers({
   sorters: SortersReducer,
-  filters: FilterReducer
+  filters: FilterReducer,
+  columns: ColumnReducer
 })
 
 export const initialStore = (initialState = {}) => {

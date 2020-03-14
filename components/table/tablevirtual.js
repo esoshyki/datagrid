@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DataTable = ({users, sorters, filters, dispatch}) => {
+const DataTable = ({users, sorters, filters, columns, dispatch}) => {
 
   const classes = useStyles();
   
@@ -46,16 +46,6 @@ const DataTable = ({users, sorters, filters, dispatch}) => {
   const [ virtualization, setVirtualization ] = useState(true);
   const [ filtredData, setFiltredData ] = useState([...users]);
   const [ selectedRows, setSelectedRow ] = useState([])
-
-  const [ columns, setColumns ] = useState([
-    {id: 1, title:'Name', dataKey:'name', isVisible: true},
-    {id: 2, title:'Email', dataKey:'email', isVisible: true},
-    {id: 3, title:'Nickname', dataKey:'nickName', isVisible: true},
-    {id: 4, title:'Age', dataKey:'age', isVisible: true},
-    {id: 5, title:'Status', dataKey:'status', isVisible: true},
-    {id: 6, title:'Married', dataKey:'married', isVisible: true},
-    {id: 7, title:'Exam date', dataKey:'exam', isVisible: true},
-  ])
 
   const icons = [null, <ArrowDownwardIcon />, <ArrowUpwardIcon />];
 
@@ -106,7 +96,7 @@ const DataTable = ({users, sorters, filters, dispatch}) => {
   const Menu = () => {
     return (
       <div className='menu'>
-        <ColumnVisibility columns={columns} setColumns={setColumns}/>
+        <ColumnVisibility columns={columns} dispatch={dispatch}/>
         <Tooltip title='Disable virtualization'>
           <Button 
             variant="contained" 
@@ -287,7 +277,8 @@ const DataTable = ({users, sorters, filters, dispatch}) => {
 function mapStateToProps(state) {
   return {
       sorters: state.sorters,
-      filters: state.filters
+      filters: state.filters,
+      columns: state.columns
   };
 }
 

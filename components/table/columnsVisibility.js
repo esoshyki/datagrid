@@ -6,6 +6,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
+import { changeVisibility } from '../../state/actions/columns';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -20,15 +21,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ColumnVisibility = ({columns, setColumns}) => {
+const ColumnVisibility = ({columns, dispatch}) => {
   const classes = useStyles()
 
   const handleChange = ({target}) => {
     const index = target.value - 1;
-    const newColumns = [...columns];
-    const visibility = columns[index].isVisible
-    newColumns[index].isVisible = !visibility;
-    setColumns(newColumns)
+    const isVisibleValue = !columns[index].isVisible;
+    dispatch(changeVisibility({index, isVisibleValue}))
   }
 
   return (
