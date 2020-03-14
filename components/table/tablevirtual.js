@@ -18,6 +18,7 @@ import ColumnVisibility from './columnsVisibility';
 import { connect } from "react-redux"
 import sortService, { sortContent } from './services/sortService';
 import filterService, { filterContent } from './services/filterService';
+import rowVisibilityContent, { changeRowsVisibility, changeRowsSelection } from './services/rowVisibility';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -29,12 +30,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DataTable = ({users, sorters, filters, columns, dispatch}) => {
+const icons = [null, <ArrowDownwardIcon />, <ArrowUpwardIcon />];
+
+const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => {
 
   const classes = useStyles();
+  const [ virtualization, setVirtualization ] = useState(true);
+
+  const hiddenRowsData = rowVisibilityContent({
+    contentArray: users, 
+    deletedRows: hiddenRows.deletedRows
+  })
   
   const sortedData = sortContent({
-    contentArray: users, 
+    contentArray: hiddenRowsData, 
     activeSorters: sorters.activeSorters, 
     sortSettings: sorters.sortSettings})
 
@@ -42,12 +51,6 @@ const DataTable = ({users, sorters, filters, columns, dispatch}) => {
     contentArray: sortedData,
     filters: filters
   })
-
-  const [ virtualization, setVirtualization ] = useState(true);
-  const [ filtredData, setFiltredData ] = useState([...users]);
-  const [ selectedRows, setSelectedRow ] = useState([])
-
-  const icons = [null, <ArrowDownwardIcon />, <ArrowUpwardIcon />];
 
   const handleInput = ({target}) => {
     const {value} = target;
@@ -67,18 +70,11 @@ const DataTable = ({users, sorters, filters, columns, dispatch}) => {
   }
 
   const deleteRowHandler = () => {
-    const array = [...filtredData].sort((a, b) => a - b);
-    let count = 0
-    selectedRows.forEach(el => {
-      array.splice(el - count, 1)
-      count ++ 
-    })
-    setFiltredData(array)
-    setSelectedRow([])
+    changeRowsVisibility({dispatch})
   }
 
   const RowAction = () => {
-    if (selectedRows.length === 0) {
+    if (hiddenRows.selectedRows.length === 0) {
       return null 
     } else {
       return (
@@ -132,14 +128,10 @@ const DataTable = ({users, sorters, filters, columns, dispatch}) => {
   const handleRowClick = ({target}) => {
     const currentRow = target.classList[0] === 'row' ? target : target.parentNode
     const currentRowIndex = currentRow.id.replace("row", "");
-    const arrayOfSelectedRows = [...selectedRows];
-    const index = arrayOfSelectedRows.indexOf(currentRowIndex);
-    if (index < 0) {
-      arrayOfSelectedRows.push(currentRowIndex)
-    } else {
-      arrayOfSelectedRows.splice(index, 1)
-    }
-    setSelectedRow(arrayOfSelectedRows)
+    console.log(currentRowIndex)
+    changeRowsSelection({
+      rowIndex: currentRowIndex, dispatch: dispatch
+    })
   }
 
   const Row = ( { index, style }) => {
@@ -147,7 +139,7 @@ const DataTable = ({users, sorters, filters, columns, dispatch}) => {
     return (
       <div key={'row' + index}
         style={style} 
-        className= {selectedRows.includes(index.toString()) ? 'row selected' : 'row'}
+        className= {hiddenRows.selectedRows.includes(index.toString()) ? 'row selected' : 'row'}
         onClick={handleRowClick} 
         id={`row${index}`}>
         {cols.map((colData) => {
@@ -278,7 +270,8 @@ function mapStateToProps(state) {
   return {
       sorters: state.sorters,
       filters: state.filters,
-      columns: state.columns
+      columns: state.columns,
+      hiddenRows: state.hiddenRows
   };
 }
 
