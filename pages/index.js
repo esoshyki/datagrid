@@ -5,7 +5,7 @@ import personsData from '../data/data.json';
 import Head from 'next/head';
 import '../style/style.sass'
 
-const Index = ({sorters, dispatch}) => {
+const Index = () => {
   const users = personsData;
   return users ? (
     <div>
@@ -23,10 +23,4 @@ const Index = ({sorters, dispatch}) => {
   ) : <div>Loading...</div>
 }
 
-function mapStateToProps(state) {
-  return {
-      sorters: state.sorters,
-  };
-}
-
-export default connect(mapStateToProps)(Index);
+export default connect()(Index);

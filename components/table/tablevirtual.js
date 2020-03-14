@@ -227,7 +227,7 @@ const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => 
       <Menu />
       <TableInfo />
       <div className='main-table'>
-      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} defaultValue={filters.global}/>
+      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} /*defaultValue={filters.global}*//>
         <div className='table-header'>
           {columns.filter(el => el.isVisible).map((column, idx) => {
               return (
