@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import { FixedSizeList as List } from 'react-window';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import { Cell, DateCell, BoolCell } from './cells';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -19,6 +18,7 @@ import { connect } from "react-redux"
 import sortService, { sortContent } from './services/sortService';
 import filterService, { filterContent } from './services/filterService';
 import rowVisibilityContent, { changeRowsVisibility, changeRowsSelection } from './services/rowVisibility';
+import _Row from './row';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -30,9 +30,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+
 const icons = [null, <ArrowDownwardIcon />, <ArrowUpwardIcon />];
 
 const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => {
+
 
   const classes = useStyles();
   const [ virtualization, setVirtualization ] = useState(true);
@@ -51,6 +53,8 @@ const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => 
     contentArray: sortedData,
     filters: filters
   })
+
+  console.log(hiddenRows.selectedRows)
 
   const handleInput = ({target}) => {
     const {value} = target;
@@ -135,28 +139,15 @@ const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => 
   }
 
   const Row = ( { index, style }) => {
+    const {selectedRows} = hiddenRows;
+
     const cols = columns.filter(el => el.isVisible)
-    return (
-      <div key={'row' + index}
-        style={style} 
-        className= {hiddenRows.selectedRows.includes(index.toString()) ? 'row selected' : 'row'}
-        onClick={handleRowClick} 
-        id={`row${index}`}>
-        {cols.map((colData) => {
-          const rowData =  renderedData[index];
-          const innerInfo= rowData[colData.dataKey]
-          const idx = colData.id
-          switch(idx) {
-            case 6:
-              return <BoolCell innerInfo={innerInfo} rowId={index} colId={idx} />
-            case 7:
-              return <DateCell innerInfo={innerInfo} rowId={index} colId={idx} />
-            default:
-              return <Cell innerInfo={innerInfo} rowId={index} colId={idx} />
-          }
-        })}
-      </div>
-      )}
+    return <_Row 
+      cols={cols} index={index} style={style} 
+      handleRowClick={handleRowClick} 
+      selectedRows={selectedRows} 
+      renderedData={renderedData} />
+  }
 
   const handleBoolFilterChange = ({target}) => {
     const inputFilter = {
@@ -227,7 +218,7 @@ const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => 
       <Menu />
       <TableInfo />
       <div className='main-table'>
-      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} /*defaultValue={filters.global}*//>
+      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} value={filters.global} />
         <div className='table-header'>
           {columns.filter(el => el.isVisible).map((column, idx) => {
               return (
@@ -254,9 +245,10 @@ const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => 
             itemSize={40}
             itemCount={ renderedData.length}
             className="list-container"
-            style={{
-              top: '20px'
-            }}
+            selectedRows={hiddenRows.selectedRows}
+            // style={{
+            //   top: '20px'
+            // }}
             >
             {Row}
           </List>

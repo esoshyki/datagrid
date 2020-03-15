@@ -27,7 +27,7 @@ export const initialStore = () => {
   store.subscribe(() => {
     saveState({
       sorters: store.getState().sorters,
-      filtres: store.getState.filters,
+      filters: store.getState().filters,
       columns: store.getState().columns,
       hiddenRows: store.getState().hiddenRows
     });
