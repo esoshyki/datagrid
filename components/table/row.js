@@ -6,7 +6,7 @@ export default function _Row ({cols, selectedRows, index, style, handleRowClick,
   const rowRef = useRef();
 
   useEffect(() => {
-    const idx = rowRef.current.id.replace('row','');
+    const idx = rowRef.current.id.split(' ')[1];
     if (selectedRows.includes(idx)) {
       rowRef.current.classList.add('selected')
     }
@@ -16,9 +16,9 @@ export default function _Row ({cols, selectedRows, index, style, handleRowClick,
     <div key={'row' + index}
     ref={rowRef}
     style={style} 
-    className= {selectedRows.includes(index.toString()) ? 'row selected' : 'row'}
+    className= {selectedRows.includes(renderedData[index].id.toString()) ? 'row selected' : 'row'}
     onClick={handleRowClick} 
-    id={`row${index}`}>
+    id={`row ${renderedData[index].id}`}>
       {cols.map((colData) => {
         const rowData =  renderedData[index];
         const innerInfo= rowData[colData.dataKey]

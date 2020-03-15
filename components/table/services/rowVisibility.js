@@ -2,7 +2,8 @@ import { DISABLE_ROWS, SELECT_ROW } from '../../../state/actions/rows';
 
 export default ({contentArray, deletedRows}) => {
   if (deletedRows.length > 0 ) {
-    return [...contentArray].filter(( element , index) => {
+    return [...contentArray].filter(( element ) => {
+      const index = element.id;
       return deletedRows.indexOf(index.toString()) < 0;
     }) 
   } else {

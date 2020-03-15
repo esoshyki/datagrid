@@ -11,6 +11,7 @@ const dataCreator = () => {
   const fakeData = [];
   for (let i=0; i <= 1000; i++) {
     const person = {
+      id: i,
       name: faker.name.findName(),
       email: faker.internet.email(),
       nickName: faker.internet.userName(),

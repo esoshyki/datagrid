@@ -105,6 +105,9 @@ const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, d
     return (
       <div className='menu'>
         <ColumnVisibility columns={columns} dispatch={dispatch}/>
+        <Tooltip title='Clear local Storage'>
+          <Button variant="contained" onClick={() => localStorage.clear()}>To initial state</Button>
+        </Tooltip>
         <Tooltip title='Disable virtualization'>
           <Button 
             variant="contained" 
@@ -142,7 +145,8 @@ const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, d
 
   const handleRowClick = ({target}) => {
     const currentRow = target.classList[0] === 'row' ? target : target.parentNode
-    const currentRowIndex = currentRow.id.replace("row", "");
+    console.log(currentRow)
+    const currentRowIndex = currentRow.id.split(' ')[1];
     console.log(currentRowIndex)
     changeRowsSelection({
       rowIndex: currentRowIndex, dispatch: dispatch
