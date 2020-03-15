@@ -19,6 +19,7 @@ import sortService, { sortContent } from './services/sortService';
 import filterService, { filterContent } from './services/filterService';
 import rowVisibilityContent, { changeRowsVisibility, changeRowsSelection } from './services/rowVisibility';
 import _Row from './row';
+import Csv from './csv';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -102,6 +103,9 @@ const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => 
             variant="contained" 
             color={virtualization ? "primary" : "secondary"} 
             onClick={disableVizualization}>V</Button>
+        </Tooltip>
+        <Tooltip title="Download in CSV">
+          <Csv columns={columns} renderedData={renderedData} />
         </Tooltip>
         <RowAction />
       </div>
