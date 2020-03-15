@@ -5,7 +5,8 @@ import personsData from '../data/data.json';
 import Head from 'next/head';
 import '../style/style.sass'
 
-const Index = () => {
+const Index = ({query}) => {
+  const filter = query.filter ? query.filter : null
   const users = personsData;
   return users ? (
     <div>
@@ -17,10 +18,16 @@ const Index = () => {
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
       </Head>
       <div>
-      <DataTable users={users}/>
+      <DataTable users={users} queryFilter={filter}/>
       </div>
     </div>
   ) : <div>Loading...</div>
+}
+
+Index.getInitialProps = async ({query}) => {
+  return {
+    query: query
+  }
 }
 
 export default connect()(Index);

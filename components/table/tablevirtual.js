@@ -34,8 +34,15 @@ const useStyles = makeStyles(theme => ({
 
 const icons = [null, <ArrowDownwardIcon />, <ArrowUpwardIcon />];
 
-const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => {
+const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, dispatch}) => {
 
+  const workFilters = {...filters};
+
+  if (queryFilter) {
+    workFilters.global = queryFilter
+  }
+
+  console.log(workFilters)
 
   const classes = useStyles();
   const [ virtualization, setVirtualization ] = useState(true);
@@ -52,7 +59,7 @@ const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => 
 
   const renderedData = filterContent({
     contentArray: sortedData,
-    filters: filters
+    filters: workFilters
   })
 
   console.log(hiddenRows.selectedRows)
@@ -222,7 +229,7 @@ const DataTable = ({users, sorters, filters, columns, hiddenRows, dispatch}) => 
       <Menu />
       <TableInfo />
       <div className='main-table'>
-      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} value={filters.global} />
+      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} value={workFilters.global} />
         <div className='table-header'>
           {columns.filter(el => el.isVisible).map((column, idx) => {
               return (
