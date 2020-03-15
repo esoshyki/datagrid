@@ -4,21 +4,19 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
+import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
 import { changeVisibility } from '../../state/actions/columns';
 
 const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  select: {
-    marginLeft: 15
-  }
+  // formControl: {
+  //   margin: theme.spacing(1),
+  //   minWidth: 120,
+  // },
+  // selectEmpty: {
+  //   marginTop: theme.spacing(2),
+  // },
 }));
 
 const ColumnVisibility = ({columns, dispatch}) => {
@@ -31,12 +29,13 @@ const ColumnVisibility = ({columns, dispatch}) => {
   }
 
   return (
-    <FormControl className={classes.formControl}>
+    <FormControl >
+      <InputLabel id="columns-select">Columns</InputLabel>
       <Tooltip title="Show Columns">
         <Select
-          labelId="cols-simple-select-label"
+          labelId="columns-select"
           id="cols-filter-select"
-          value='Columns'
+          value=''
           onChange={handleChange}
           className={classes.select}
         >

@@ -25,11 +25,11 @@ export default function _Row ({cols, selectedRows, index, style, handleRowClick,
         const idx = colData.id
         switch(idx) {
           case 6:
-            return <BoolCell innerInfo={innerInfo} rowId={index} colId={idx} />
+            return <BoolCell innerInfo={innerInfo} rowId={index} colId={idx} key={`${index}${idx}`}/>
           case 7:
-            return <DateCell innerInfo={innerInfo} rowId={index} colId={idx} />
+            return <DateCell innerInfo={innerInfo} rowId={index} colId={idx} key={`${index}${idx}`} />
           default:
-            return <Cell innerInfo={innerInfo} rowId={index} colId={idx} />
+            return <Cell innerInfo={innerInfo} rowId={index} colId={idx} key={`${index}${idx}`} />
         }
       })}
   </div>

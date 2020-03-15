@@ -1,13 +1,13 @@
 .menu
   position: fixed
   top: 0
-  +flex(row-reverse, flex-start)
-  margin: 5px
+  +flex(row, flex-start)
+  width: 100vw
 
   .MuiButtonBase-root
-    width: 30px !important
+    // width: 30px !important
     height: 35px
-    border-radius: 17px
+    margin: 0 10px
 
 .table-info
   +flex(row)
@@ -19,7 +19,7 @@
   user-select: none
   
 .main-table
-  margin: 50px auto
+  margin: 80px auto
   width: 2100px
   +poppins
 
@@ -29,7 +29,7 @@
     height: 30px
     top: 0
     background: #c3e8ec
-    z-index: 10
+    // z-index: 10
     width: 2100px
 
     .cell
@@ -83,3 +83,7 @@
   background: #c3e8ec !important
   padding: 10px 0
   font-weight: 500
+
+
+.MuiFormControl-root
+  width: 200px

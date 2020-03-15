@@ -42,8 +42,6 @@ const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, d
     workFilters.global = queryFilter
   }
 
-  console.log(workFilters)
-
   const classes = useStyles();
   const [ virtualization, setVirtualization ] = useState(true);
 
@@ -61,8 +59,6 @@ const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, d
     contentArray: sortedData,
     filters: workFilters
   })
-
-  console.log(hiddenRows.selectedRows)
 
   const handleInput = ({target}) => {
     const {value} = target;
@@ -105,30 +101,17 @@ const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, d
     return (
       <div className='menu'>
         <ColumnVisibility columns={columns} dispatch={dispatch}/>
-        <Tooltip title='Clear local Storage'>
+        <Tooltip title='Clear local Storage' color="primary">
           <Button variant="contained" onClick={() => localStorage.clear()}>To initial state</Button>
         </Tooltip>
         <Tooltip title='Disable virtualization'>
           <Button 
             variant="contained" 
             color={virtualization ? "primary" : "secondary"} 
-            onClick={disableVizualization}>V</Button>
+            onClick={disableVizualization}>Virtualization</Button>
         </Tooltip>
-        <Tooltip title="Download in CSV">
-          <Csv columns={columns} renderedData={renderedData} />
-        </Tooltip>
+        <Csv columns={columns} renderedData={renderedData} />
         <RowAction />
-      </div>
-    )
-  }
-
-
-  const TableInfo = () => {
-    return (
-      <div className='table-info'>
-        <Typography align="left" variant="subtitle1" >
-          Virtualization is {virtualization ? "on" : "off"}
-        </Typography>
       </div>
     )
   }
@@ -145,9 +128,7 @@ const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, d
 
   const handleRowClick = ({target}) => {
     const currentRow = target.classList[0] === 'row' ? target : target.parentNode
-    console.log(currentRow)
     const currentRowIndex = currentRow.id.split(' ')[1];
-    console.log(currentRowIndex)
     changeRowsSelection({
       rowIndex: currentRowIndex, dispatch: dispatch
     })
@@ -228,28 +209,32 @@ const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, d
     )
   }
 
+  const Header = ({column, idx}) => {
+
+    return (
+      <div className='column-header-container'>
+        <Tooltip title='Sort'>
+          <div className={'header-cell column'+idx} 
+            onClick={(event) => {
+              event.preventDefault(); sortHandler({sortKey: column.dataKey, shiftKey: event.shiftKey})}}>
+            {column.title}
+          </div>
+          </Tooltip>
+          {column.id === 6 ? <BoolFilter /> : null}
+          {column.id === 5 ? <EnumFilter /> : null}
+        {icons[sorters.sortSettings[column.dataKey].fase]}
+    </div>
+    )
+  }
+
   return (
     <div>
-      <Menu />
-      <TableInfo />
       <div className='main-table'>
-      <TextField id="filled-search" label="Filter" type="search" variant="filled" onChange={handleInput} value={workFilters.global} />
+      <TextField id="filled-search" label="Filter" variant="filled" onChange={handleInput} defaultValue={workFilters.global} />
+      <Menu />
         <div className='table-header'>
           {columns.filter(el => el.isVisible).map((column, idx) => {
-              return (
-              <div className='column-header-container'>
-                <Tooltip title='Sort'>
-                  <div className={'header-cell column'+idx} 
-                    onClick={(event) => {
-                      event.preventDefault(); sortHandler({sortKey: column.dataKey, shiftKey: event.shiftKey})}}>
-                    {column.title}
-                  </div>
-                  </Tooltip>
-                  {column.id === 6 ? <BoolFilter /> : null}
-                  {column.id === 5 ? <EnumFilter /> : null}
-                {icons[sorters.sortSettings[column.dataKey].fase]}
-              </div>
-            )
+              return <Header column={column} key={column.id} idx={idx} />
           })}
         </div>
         { renderedData.length ? (
