@@ -112,6 +112,7 @@ const DataTable = ({users, queryFilter, sorters, filters, columns, hiddenRows, d
         </Tooltip>
         <Csv columns={columns} renderedData={renderedData} />
         <RowAction />
+        <a href="https://github.com/esoshyki/datagrid">Самопроверка</a>
       </div>
     )
   }
